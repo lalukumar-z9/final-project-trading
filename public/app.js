@@ -33,6 +33,43 @@ function formatCurrency(value) {
   }).format(Number(value || 0));
 }
 
+function stockVisual(stock) {
+  const palettes = {
+    Technology: ["#6d7cff", "#3ad0ff"],
+    Semiconductors: ["#7a5cff", "#27c5f3"],
+    Automotive: ["#ff7a59", "#ff4f8b"],
+    Energy: ["#18c58f", "#0f8f72"],
+    Banking: ["#2377ff", "#2fc4ff"],
+    Retail: ["#f5a623", "#ffd166"],
+    Entertainment: ["#ff5c7c", "#8b5cf6"],
+    "IT Services": ["#00b894", "#00cec9"],
+    Infrastructure: ["#f97316", "#ef4444"],
+    "Consumer Goods": ["#84cc16", "#14b8a6"],
+    Streaming: ["#ef4444", "#7c3aed"],
+    "E-Commerce": ["#f59e0b", "#fb7185"],
+  };
+
+  const [from, to] = palettes[stock.sector] || ["#3b82f6", "#22c55e"];
+  return {
+    text: stock.symbol.replace(/[^A-Z]/g, "").slice(0, 2),
+    style: `background: linear-gradient(135deg, ${from}, ${to});`,
+  };
+}
+
+function stockIdentMarkup(stock, size = "") {
+  const visual = stockVisual(stock);
+  const sizeClass = size ? ` ${size}` : "";
+  return `
+    <div class="stock-ident">
+      <div class="stock-badge${sizeClass}" style="${visual.style}">${visual.text}</div>
+      <div class="stock-name">
+        <strong>${stock.company}</strong>
+        <p class="stock-symbol-line">${stock.symbol}</p>
+      </div>
+    </div>
+  `;
+}
+
 async function api(url, options = {}) {
   const response = await fetch(url, {
     headers: {
@@ -128,10 +165,7 @@ function renderWatchlist() {
     .map(
       (stock) => `
         <div class="watch-row clickable-stock" data-symbol="${stock.symbol}">
-          <div>
-            <strong>${stock.symbol}</strong>
-            <p class="muted">${stock.company}</p>
-          </div>
+          ${stockIdentMarkup(stock, "tiny")}
           <div>
             <strong>${formatCurrency(stock.price)}</strong>
             <p class="delta ${stock.changePercent >= 0 ? "positive" : "negative"}">
@@ -159,18 +193,15 @@ function renderMarket() {
     return;
   }
 
-  marketCards.innerHTML = state.dashboard.market
-    .map(
-      (stock) => `
-        <article class="market-card select-stock" data-symbol="${stock.symbol}">
-          <div class="section-top">
-            <div>
-              <h4>${stock.symbol}</h4>
-              <p class="muted">${stock.company}</p>
-            </div>
-            <span class="delta ${stock.changePercent >= 0 ? "positive" : "negative"}">
-              ${stock.changePercent >= 0 ? "+" : ""}${stock.changePercent}%
-            </span>
+    marketCards.innerHTML = state.dashboard.market
+      .map(
+        (stock) => `
+          <article class="market-card select-stock" data-symbol="${stock.symbol}">
+            <div class="section-top">
+              ${stockIdentMarkup(stock)}
+              <span class="delta ${stock.changePercent >= 0 ? "positive" : "negative"}">
+                ${stock.changePercent >= 0 ? "+" : ""}${stock.changePercent}%
+              </span>
           </div>
           <span class="sector-chip">${stock.sector}</span>
           <div class="stat-value">${formatCurrency(stock.price)}</div>
@@ -212,13 +243,10 @@ function renderHoldings() {
           .map(
             (holding) => `
               <div class="holding-row clickable-stock" data-symbol="${holding.symbol}">
+                ${stockIdentMarkup(holding, "tiny")}
                 <div>
-                  <strong>${holding.symbol}</strong>
-                  <p class="muted">${holding.company}</p>
-              </div>
-              <div>
-                <strong>${holding.quantity} shares</strong>
-                <p class="delta ${holding.unrealizedPnL >= 0 ? "positive" : "negative"}">
+                  <strong>${holding.quantity} shares</strong>
+                  <p class="delta ${holding.unrealizedPnL >= 0 ? "positive" : "negative"}">
                   ${formatCurrency(holding.unrealizedPnL)}
                 </p>
               </div>
@@ -234,12 +262,12 @@ function renderHoldings() {
             (holding) => `
               <div class="holding-row clickable-stock" data-symbol="${holding.symbol}">
                 <div>
-                  <strong>${holding.symbol}</strong>
+                  ${stockIdentMarkup(holding, "tiny")}
                   <p class="muted">${holding.quantity} shares | Avg ${formatCurrency(holding.avgBuy)}</p>
-              </div>
-              <div>
-                <strong class="negative">${formatCurrency(holding.unrealizedPnL)}</strong>
-                <p class="muted">${holding.changePercent}% today</p>
+                </div>
+                <div>
+                  <strong class="negative">${formatCurrency(holding.unrealizedPnL)}</strong>
+                  <p class="muted">${holding.changePercent}% today</p>
               </div>
             </div>
           `
@@ -284,13 +312,10 @@ function renderPerformance() {
             (holding) => `
               <div class="metric-card clickable-stock" data-symbol="${holding.symbol}">
                 <div class="section-top">
-                  <div>
-                    <strong>${holding.symbol}</strong>
-                  <p class="muted">${holding.company}</p>
-                </div>
-                <span class="delta ${holding.unrealizedPnL >= 0 ? "positive" : "negative"}">
-                  ${formatCurrency(holding.unrealizedPnL)}
-                </span>
+                  ${stockIdentMarkup(holding)}
+                  <span class="delta ${holding.unrealizedPnL >= 0 ? "positive" : "negative"}">
+                    ${formatCurrency(holding.unrealizedPnL)}
+                  </span>
               </div>
               <p class="muted">Avg Buy ${formatCurrency(holding.avgBuy)} | Current ${formatCurrency(holding.currentPrice)}</p>
             </div>
@@ -377,10 +402,7 @@ function renderSelectedStock() {
   document.getElementById("ticketPrice").textContent = formatCurrency(selected.price);
   document.getElementById("selectedStockCard").innerHTML = `
     <div class="trade-row">
-      <div>
-        <strong>${selected.company}</strong>
-        <p class="muted">${selected.sector}</p>
-      </div>
+      ${stockIdentMarkup(selected, "large")}
       <div>
         <strong>${formatCurrency(selected.price)}</strong>
         <p class="delta ${selected.changePercent >= 0 ? "positive" : "negative"}">
@@ -510,7 +532,13 @@ function drawChart(points = [], symbol = "") {
     <text class="price-tag-text" x="${width - rightPad + 28}" y="${latestY + 4}" text-anchor="middle">${latest.close.toFixed(2)}</text>
   `;
 
-  document.getElementById("chartTitle").textContent = `${symbol} Price`;
+  const selectedStock =
+    state.dashboard?.market.find((stock) => stock.symbol === symbol) ||
+    state.dashboard?.holdings.find((stock) => stock.symbol === symbol) ||
+    state.dashboard?.watchlist.find((stock) => stock.symbol === symbol);
+  document.getElementById("chartTitle").innerHTML = selectedStock
+    ? `${stockIdentMarkup(selectedStock, "large")}<span>${symbol} Price</span>`
+    : `${symbol} Price`;
   document.getElementById("chartSpotPrice").textContent = `INR ${latest.close.toFixed(2)}`;
   setOhlcStats(latest);
   document.getElementById("liveChart").innerHTML = `
