@@ -614,6 +614,7 @@ button:hover {
 .selected-stock-card,
 .market-card,
 .metric-card,
+.research-card,
 .empty-state {
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.07);
@@ -742,6 +743,59 @@ button:hover {
 
 .metric-card {
   padding: 18px;
+}
+
+.research-card {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.research-grid .metric-card {
+  padding: 14px;
+}
+
+.deep-dive-card {
+  display: grid;
+  gap: 16px;
+}
+
+.deep-dive-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.thesis-box {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(92, 200, 255, 0.06);
+  border: 1px solid rgba(92, 200, 255, 0.12);
+}
+
+.detail-list {
+  display: grid;
+  gap: 10px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .table-shell {

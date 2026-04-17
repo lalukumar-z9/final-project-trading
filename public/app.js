@@ -234,55 +234,85 @@ function renderMarket() {
 
 function renderHoldings() {
   const holdings = state.dashboard.holdings;
-  const losses = holdings
-    .filter((holding) => holding.unrealizedPnL < 0)
-    .sort((a, b) => a.unrealizedPnL - b.unrealizedPnL);
 
-    document.getElementById("holdingsList").innerHTML = holdings.length
-      ? holdings
-          .map(
-            (holding) => `
-              <div class="holding-row clickable-stock" data-symbol="${holding.symbol}">
-                ${stockIdentMarkup(holding, "tiny")}
+  document.getElementById("holdingsList").innerHTML = holdings.length
+    ? holdings
+        .map(
+          (holding) => `
+            <article class="research-card clickable-stock" data-symbol="${holding.symbol}">
+              <div class="section-top">
+                ${stockIdentMarkup(holding)}
                 <div>
                   <strong>${holding.quantity} shares</strong>
-                  <p class="delta ${holding.unrealizedPnL >= 0 ? "positive" : "negative"}">
-                  ${formatCurrency(holding.unrealizedPnL)}
-                </p>
+                  <p class="delta ${holding.unrealizedPnL >= 0 ? "positive" : "negative"}">${formatCurrency(holding.unrealizedPnL)}</p>
+                </div>
               </div>
-            </div>
+              <p class="muted">${holding.description}</p>
+              <div class="research-grid">
+                <div class="metric-card">
+                  <p class="eyebrow">Current Price</p>
+                  <strong>${formatCurrency(holding.currentPrice)}</strong>
+                </div>
+                <div class="metric-card">
+                  <p class="eyebrow">Market Value</p>
+                  <strong>${formatCurrency(holding.marketValue)}</strong>
+                </div>
+                <div class="metric-card">
+                  <p class="eyebrow">P/E Ratio</p>
+                  <strong>${holding.peRatio ?? "--"}</strong>
+                </div>
+                <div class="metric-card">
+                  <p class="eyebrow">Dividend Yield</p>
+                  <strong>${holding.dividendYield || "--"}</strong>
+                </div>
+              </div>
+              <p class="muted">HQ ${holding.headquarters} | CEO ${holding.ceo} | Founded ${holding.founded}</p>
+            </article>
           `
         )
         .join("")
     : '<div class="metric-card"><strong>No holdings yet.</strong><p class="muted">Place a buy order to build the portfolio.</p></div>';
 
-    document.getElementById("lossLeaders").innerHTML = losses.length
-      ? losses
-          .map(
-            (holding) => `
-              <div class="holding-row clickable-stock" data-symbol="${holding.symbol}">
-                <div>
-                  ${stockIdentMarkup(holding, "tiny")}
-                  <p class="muted">${holding.quantity} shares | Avg ${formatCurrency(holding.avgBuy)}</p>
-                </div>
-                <div>
-                  <strong class="negative">${formatCurrency(holding.unrealizedPnL)}</strong>
-                  <p class="muted">${holding.changePercent}% today</p>
-              </div>
-            </div>
-          `
-          )
-          .join("")
-      : '<div class="metric-card"><strong>No active losses.</strong><p class="muted">Your open positions are holding above cost basis.</p></div>';
-
   document
-    .querySelectorAll("#holdingsList .clickable-stock, #lossLeaders .clickable-stock")
+    .querySelectorAll("#holdingsList .clickable-stock")
     .forEach((row) => {
       row.addEventListener("click", () => {
         state.selectedSymbol = row.dataset.symbol;
         renderAll();
       });
     });
+}
+
+function renderCompanyDeepDive(stock) {
+  if (!stock) {
+    document.getElementById("companyDeepDive").innerHTML =
+      '<div class="metric-card"><strong>No company selected.</strong><p class="muted">Click any stock to inspect deep company details.</p></div>';
+    return;
+  }
+
+  document.getElementById("companyDeepDive").innerHTML = `
+    <article class="deep-dive-card">
+      <div class="deep-dive-header">
+        ${stockIdentMarkup(stock, "large")}
+        <span class="sector-chip">${stock.riskLevel || stock.sector}</span>
+      </div>
+      <p class="muted">${stock.description}</p>
+      <div class="detail-list">
+        <div class="detail-row"><span class="muted">Sector</span><strong>${stock.sector}</strong></div>
+        <div class="detail-row"><span class="muted">Headquarters</span><strong>${stock.headquarters || "--"}</strong></div>
+        <div class="detail-row"><span class="muted">CEO</span><strong>${stock.ceo || "--"}</strong></div>
+        <div class="detail-row"><span class="muted">Founded</span><strong>${stock.founded || "--"}</strong></div>
+        <div class="detail-row"><span class="muted">Employees</span><strong>${stock.employees || "--"}</strong></div>
+        <div class="detail-row"><span class="muted">Market Cap</span><strong>${stock.marketCap || "--"}</strong></div>
+        <div class="detail-row"><span class="muted">P/E Ratio</span><strong>${stock.peRatio ?? "--"}</strong></div>
+        <div class="detail-row"><span class="muted">Dividend Yield</span><strong>${stock.dividendYield || "--"}</strong></div>
+      </div>
+      <div class="thesis-box">
+        <p class="eyebrow">Investment Thesis</p>
+        <p>${stock.thesis || "No thesis available."}</p>
+      </div>
+    </article>
+  `;
 }
 
 function renderHistory() {
@@ -585,6 +615,7 @@ function renderAll() {
   renderPerformance();
   renderProfile();
   renderSelectedStock();
+  renderCompanyDeepDive(chartStock);
   drawChart(chartStock?.history || state.dashboard.chart.points, chartStock?.symbol || state.dashboard.chart.symbol);
 
   if (chartStock) {
