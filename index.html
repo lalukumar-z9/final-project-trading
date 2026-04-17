@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TradeSphere Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-bg"></div>
+
+    <main class="shell">
+      <section class="login-card" id="loginCard">
+        <div class="brand-row">
+          <div class="brand-mark">TS</div>
+          <div>
+            <p class="eyebrow">Final Year Project</p>
+            <h1>TradeSphere Pro</h1>
+          </div>
+        </div>
+
+        <div class="hero-copy">
+          <h2>Advanced stock trading and portfolio management.</h2>
+          <p>
+            A realistic trading dashboard with authentication, stock discovery,
+            portfolio analytics, profit and loss insights, transaction history,
+            and profile management.
+          </p>
+        </div>
+
+        <form id="loginForm" class="login-form">
+          <label>
+            Email
+            <input type="email" id="email" value="investor@tradesphere.com" required />
+          </label>
+          <label>
+            Password
+            <input type="password" id="password" value="Trade@123" required />
+          </label>
+          <div class="form-meta">
+            <span>Secure login enabled</span>
+            <span>Demo access</span>
+          </div>
+          <button type="submit">Login to Dashboard</button>
+        </form>
+      </section>
+
+      <section class="dashboard hidden" id="dashboard">
+        <aside class="sidebar">
+          <div class="brand-stack">
+            <div class="brand-mark">TS</div>
+            <div>
+              <p class="eyebrow">Smart Investing</p>
+              <h2>TradeSphere</h2>
+            </div>
+          </div>
+
+          <nav class="nav-links">
+            <button class="nav-link active" data-section="overview">Overview</button>
+            <button class="nav-link" data-section="history">Stock History</button>
+            <button class="nav-link" data-section="performance">Profit & Loss</button>
+            <button class="nav-link" data-section="profile">Profile</button>
+          </nav>
+
+          <div class="watchlist-card">
+            <p class="eyebrow">Market Movers</p>
+            <div id="watchlist"></div>
+          </div>
+        </aside>
+
+        <div class="main-panel">
+          <header class="topbar">
+            <div>
+              <p class="eyebrow">Welcome back</p>
+              <h1>Investor Dashboard</h1>
+            </div>
+            <div class="topbar-actions">
+              <label class="search-box">
+                <span>Search stocks</span>
+                <input
+                  type="search"
+                  id="stockSearch"
+                  placeholder="Search by company or symbol"
+                />
+              </label>
+              <button class="ghost-btn" id="logoutBtn">Logout</button>
+            </div>
+          </header>
+
+          <section class="content-section active" id="overview">
+            <div class="grid stats-grid" id="statsGrid"></div>
+
+            <article class="panel market-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Search Options</p>
+                  <h3>Market Explorer</h3>
+                </div>
+                <span class="chip">Discovery panel</span>
+              </div>
+              <div id="marketCards" class="market-cards"></div>
+            </article>
+
+            <div class="grid two-column">
+              <article class="panel featured-panel">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Portfolio Allocation</p>
+                    <h3>Holdings Snapshot</h3>
+                  </div>
+                  <span class="chip">Live simulation</span>
+                </div>
+                <div id="holdingsList" class="holdings-list"></div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Loss Trend</p>
+                    <h3>Drawdown Analysis</h3>
+                  </div>
+                  <span class="chip danger">Risk monitor</span>
+                </div>
+                <div id="lossChart" class="chart-box"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="content-section" id="history">
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Trade Records</p>
+                  <h3>Stock & Transaction History</h3>
+                </div>
+                <span class="chip">Search enabled</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Symbol</th>
+                      <th>Company</th>
+                      <th>Type</th>
+                      <th>Qty</th>
+                      <th>Price</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="content-section" id="performance">
+            <div class="grid performance-grid">
+              <article class="panel">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Performance</p>
+                    <h3>Profit & Loss Summary</h3>
+                  </div>
+                </div>
+                <div id="profitLossList" class="profit-loss-list"></div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Trading Insights</p>
+                    <h3>Account Metrics</h3>
+                  </div>
+                </div>
+                <div class="metric-stack" id="metricStack"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="content-section" id="profile">
+            <div class="grid two-column">
+              <article class="panel profile-card">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Account</p>
+                    <h3>User Profile</h3>
+                  </div>
+                  <span class="chip success">Verified</span>
+                </div>
+                <div id="profileSummary"></div>
+              </article>
+
+              <article class="panel">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Preferences</p>
+                    <h3>Trading Settings</h3>
+                  </div>
+                </div>
+                <form class="profile-form">
+                  <label>
+                    Risk appetite
+                    <select>
+                      <option>Moderate</option>
+                      <option>Conservative</option>
+                      <option>Aggressive</option>
+                    </select>
+                  </label>
+                  <label>
+                    Notification mode
+                    <select>
+                      <option>Realtime Alerts</option>
+                      <option>Daily Digest</option>
+                      <option>Weekly Review</option>
+                    </select>
+                  </label>
+                  <label>
+                    Preferred market
+                    <input type="text" value="NASDAQ & NSE" />
+                  </label>
+                  <button type="button">Update Profile</button>
+                </form>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

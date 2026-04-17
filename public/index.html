@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TradeSphere Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="noise"></div>
+    <div class="orb orb-one"></div>
+    <div class="orb orb-two"></div>
+
+    <main class="app-shell">
+      <section class="login-view" id="loginView">
+        <div class="login-panel">
+          <div class="login-copy">
+            <p class="eyebrow">MongoDB Powered Trading Project</p>
+            <h1>Trade like a real desk, not a classroom demo.</h1>
+            <p class="support-copy">
+              Login, monitor live-style market movement, place buy and sell
+              orders, inspect profit and loss, track risk, and manage your
+              investor profile in one polished trading workspace.
+            </p>
+            <div class="feature-badges">
+              <span>Live graph</span>
+              <span>Working orders</span>
+              <span>MongoDB backend</span>
+            </div>
+          </div>
+
+          <div class="auth-shell glass">
+            <div class="brand-row">
+              <div class="brand-logo">TS</div>
+              <div>
+                <p class="eyebrow">Advanced Trading Suite</p>
+                <h2>TradeSphere Pro</h2>
+              </div>
+            </div>
+            <div class="auth-switcher">
+              <button type="button" class="auth-tab active" data-auth-view="login">Login</button>
+              <button type="button" class="auth-tab" data-auth-view="register">Register</button>
+            </div>
+
+            <form class="login-form auth-form active" id="loginForm">
+              <label>
+                Email
+                <input id="email" type="email" value="investor@tradesphere.com" required />
+              </label>
+              <label>
+                Password
+                <input id="password" type="password" value="Trade@123" required />
+              </label>
+              <button type="submit" class="primary-btn">Enter Trading Desk</button>
+              <p class="login-note">Demo account is prefilled. Orders persist in MongoDB.</p>
+            </form>
+
+            <form class="login-form auth-form" id="registerForm">
+              <label>
+                Full name
+                <input id="registerName" type="text" placeholder="Enter your name" required />
+              </label>
+              <label>
+                Email
+                <input id="registerEmail" type="email" placeholder="Enter your email" required />
+              </label>
+              <label>
+                Password
+                <input id="registerPassword" type="password" placeholder="Create password" required />
+              </label>
+              <label>
+                Preferred market
+                <input id="registerMarket" type="text" value="NASDAQ & NSE" required />
+              </label>
+              <button type="submit" class="primary-btn">Create Account</button>
+              <p class="login-note">A new trading account will be created in MongoDB and ready to log in immediately.</p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-view hidden" id="dashboardView">
+        <aside class="sidebar glass">
+          <div class="brand-row sidebar-brand">
+            <div class="brand-logo">TS</div>
+            <div>
+              <p class="eyebrow">Institutional UI</p>
+              <h2>TradeSphere</h2>
+            </div>
+          </div>
+
+          <nav class="sidebar-nav">
+            <button class="nav-item active" data-section="overview">Overview</button>
+            <button class="nav-item" data-section="history">History</button>
+            <button class="nav-item" data-section="performance">Performance</button>
+            <button class="nav-item" data-section="profile">Profile</button>
+          </nav>
+
+          <div class="watchlist glass-inner">
+            <div class="section-top">
+              <div>
+                <p class="eyebrow">Watchlist</p>
+                <h3>Top Movers</h3>
+              </div>
+            </div>
+            <div id="watchlist"></div>
+          </div>
+        </aside>
+
+        <section class="workspace">
+          <header class="workspace-header">
+            <div>
+              <p class="eyebrow">Realtime Portfolio Intelligence</p>
+              <h1 id="headerTitle">Trading Dashboard</h1>
+            </div>
+            <div class="header-actions">
+              <label class="search-box glass">
+                <span>Search by stock, company, or sector</span>
+                <input id="stockSearch" type="search" placeholder="Search market" />
+              </label>
+              <button id="logoutBtn" class="ghost-btn">Logout</button>
+            </div>
+          </header>
+
+          <section id="overview" class="page-section active">
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <div class="hero-grid">
+              <article class="hero-card glass">
+                <div class="trading-header">
+                  <div>
+                    <p class="eyebrow">Advanced Market Graph</p>
+                    <h3 id="chartTitle">AAPL Price</h3>
+                  </div>
+                  <div class="trading-price-box">
+                    <div id="chartSpotPrice" class="chart-spot-price">INR 0.00</div>
+                    <div class="legend">
+                      <span class="dot"></span>
+                      <span id="chartChange">0.00%</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-toolbar">
+                  <div class="chart-mode-switch">
+                    <button type="button" class="chart-mode-btn active">Candles</button>
+                    <button type="button" class="chart-mode-btn">Depth</button>
+                  </div>
+                  <div class="timeframe-row">
+                    <button type="button" class="timeframe-btn">1m</button>
+                    <button type="button" class="timeframe-btn">5m</button>
+                    <button type="button" class="timeframe-btn">15m</button>
+                    <button type="button" class="timeframe-btn">1h</button>
+                    <button type="button" class="timeframe-btn">4h</button>
+                    <button type="button" class="timeframe-btn active">1d</button>
+                    <button type="button" class="timeframe-btn">1w</button>
+                  </div>
+                </div>
+                <div class="ohlc-strip">
+                  <span id="ohlcTime">Time --</span>
+                  <span id="ohlcOpen">Open --</span>
+                  <span id="ohlcHigh">High --</span>
+                  <span id="ohlcLow">Low --</span>
+                  <span id="ohlcClose">Close --</span>
+                  <span id="ohlcChange">Change --</span>
+                  <span id="ohlcVolatility">Volatility --</span>
+                </div>
+                <div id="liveChart" class="chart-stage"></div>
+              </article>
+
+              <article class="order-ticket glass">
+                <div class="section-top">
+                  <div>
+                    <p class="eyebrow">Quick Ticket</p>
+                    <h3 id="ticketSymbol">Select a Stock</h3>
+                  </div>
+                  <span class="accent-pill" id="ticketPrice">Live</span>
+                </div>
+                <div id="selectedStockCard" class="selected-stock-card"></div>
+                <div class="ticket-actions">
+                  <button id="quickBuyBtn" class="primary-btn" disabled>Buy Now</button>
+                  <button id="quickSellBtn" class="danger-btn" disabled>Sell Now</button>
+                </div>
+              </article>
+            </div>
+
+            <article class="market-panel glass">
+              <div class="section-top">
+                <div>
+                  <p class="eyebrow">Search Options</p>
+                  <h3>Market Explorer</h3>
+                </div>
+                <span class="accent-pill">Live orders enabled</span>
+              </div>
+              <div id="marketCards" class="market-grid"></div>
+            </article>
+
+            <div class="split-grid">
+              <article class="glass">
+                <div class="section-top">
+                  <div>
+                    <p class="eyebrow">Open Holdings</p>
+                    <h3>Portfolio Allocation</h3>
+                  </div>
+                </div>
+                <div id="holdingsList" class="stack-list"></div>
+              </article>
+
+              <article class="glass">
+                <div class="section-top">
+                  <div>
+                    <p class="eyebrow">Drawdown Focus</p>
+                    <h3>Loss Radar</h3>
+                  </div>
+                </div>
+                <div id="lossLeaders" class="stack-list"></div>
+              </article>
+            </div>
+          </section>
+
+          <section id="history" class="page-section">
+            <article class="glass">
+              <div class="section-top">
+                <div>
+                  <p class="eyebrow">Executed Orders</p>
+                  <h3>Stock History</h3>
+                </div>
+                <span class="accent-pill">MongoDB records</span>
+              </div>
+              <div class="table-shell">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Symbol</th>
+                      <th>Type</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyTable"></tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section id="performance" class="page-section">
+            <div class="performance-grid">
+              <article class="glass">
+                <div class="section-top">
+                  <div>
+                    <p class="eyebrow">P&L Breakdown</p>
+                    <h3>Profit and Loss</h3>
+                  </div>
+                </div>
+                <div id="profitLossCards" class="stack-list"></div>
+              </article>
+
+              <article class="glass">
+                <div class="section-top">
+                  <div>
+                    <p class="eyebrow">Risk and Cash</p>
+                    <h3>Performance Snapshot</h3>
+                  </div>
+                </div>
+                <div id="metricsPanel" class="metric-grid"></div>
+              </article>
+            </div>
+          </section>
+
+          <section id="profile" class="page-section">
+            <div class="split-grid">
+              <article class="glass">
+                <div class="section-top">
+                  <div>
+                    <p class="eyebrow">Investor Identity</p>
+                    <h3>Profile</h3>
+                  </div>
+                </div>
+                <div id="profileSummary" class="profile-summary"></div>
+              </article>
+
+              <article class="glass">
+                <div class="section-top">
+                  <div>
+                    <p class="eyebrow">Editable Preferences</p>
+                    <h3>Account Controls</h3>
+                  </div>
+                </div>
+                <form id="profileForm" class="profile-form">
+                  <label>
+                    Risk profile
+                    <select id="riskProfile">
+                      <option>Conservative</option>
+                      <option>Moderate</option>
+                      <option>Aggressive</option>
+                    </select>
+                  </label>
+                  <label>
+                    Notification mode
+                    <select id="notifications">
+                      <option>Realtime Alerts</option>
+                      <option>Daily Digest</option>
+                      <option>Weekly Review</option>
+                    </select>
+                  </label>
+                  <label>
+                    Preferred market
+                    <input id="preferredMarket" type="text" />
+                  </label>
+                  <button type="submit" class="primary-btn">Save Profile</button>
+                </form>
+              </article>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <div class="modal hidden" id="tradeModal">
+      <div class="modal-card glass">
+        <div class="section-top">
+          <div>
+            <p class="eyebrow" id="modalTypeLabel">Place Order</p>
+            <h3 id="modalTitle">Trade</h3>
+          </div>
+          <button id="closeModalBtn" class="ghost-btn small-btn">Close</button>
+        </div>
+        <form id="tradeForm" class="trade-form">
+          <label>
+            Symbol
+            <input id="tradeSymbol" type="text" readonly />
+          </label>
+          <label>
+            Quantity
+            <input id="tradeQuantity" type="number" min="1" value="1" required />
+          </label>
+          <button type="submit" class="primary-btn">Confirm Order</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
