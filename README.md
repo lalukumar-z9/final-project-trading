@@ -23,6 +23,36 @@ TradeSphere Pro is a full-stack stock trading final year project starter with:
 3. Run `npm start`
 4. Open [http://localhost:4000](http://localhost:4000)
 
+## Deploy online
+
+Recommended stack:
+
+- Render for the Node.js app
+- MongoDB Atlas for the database
+
+### Render setup
+
+1. Push this repo to GitHub.
+2. In Render, create a new `Web Service`.
+3. Connect the GitHub repo.
+4. Use these settings:
+   - Build command: `npm install`
+   - Start command: `npm start`
+5. Add environment variables:
+   - `PORT` = `10000`
+   - `MONGODB_URI` = your MongoDB Atlas connection string with a database name added at the end
+
+Example format:
+
+```env
+mongodb+srv://USERNAME:PASSWORD@cluster0.example.mongodb.net/tradesphere_pro?retryWrites=true&w=majority&appName=Cluster0
+```
+
+Important:
+
+- Do not commit your real MongoDB password into the repo.
+- If you shared your password publicly, rotate it in MongoDB Atlas before production use.
+
 ## Demo login
 
 - Email: `investor@tradesphere.com`

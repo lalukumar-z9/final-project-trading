@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: tradesphere-pro
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.1
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
