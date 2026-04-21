@@ -21,14 +21,18 @@ const closeModalBtn = document.getElementById("closeModalBtn");
 const quickBuyBtn = document.getElementById("quickBuyBtn");
 const quickSellBtn = document.getElementById("quickSellBtn");
 const profileForm = document.getElementById("profileForm");
+const walletForm = document.getElementById("walletForm");
+const walletAction = document.getElementById("walletAction");
+const walletMethod = document.getElementById("walletMethod");
+const gpayPanel = document.getElementById("gpayPanel");
 const toast = document.getElementById("toast");
 const authTabs = document.querySelectorAll(".auth-tab");
 const authForms = document.querySelectorAll(".auth-form");
 
 function formatCurrency(value) {
-  return new Intl.NumberFormat("en-IN", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "INR",
+    currency: "USD",
     maximumFractionDigits: 2,
   }).format(Number(value || 0));
 }
@@ -106,6 +110,13 @@ function showToast(message, isError = false) {
 function setSection(sectionId) {
   navItems.forEach((item) => item.classList.toggle("active", item.dataset.section === sectionId));
   sections.forEach((section) => section.classList.toggle("active", section.id === sectionId));
+  if (sectionId === "market") {
+    state.search = "";
+    stockSearch.value = "";
+    if (state.dashboard) {
+      renderMarket();
+    }
+  }
 }
 
 function setAuthView(view) {
@@ -161,7 +172,8 @@ function renderStats() {
 }
 
 function renderWatchlist() {
-  document.getElementById("watchlist").innerHTML = state.dashboard.watchlist
+  const watchlist = Array.isArray(state.dashboard?.watchlist) ? state.dashboard.watchlist : [];
+  document.getElementById("watchlist").innerHTML = watchlist
     .map(
       (stock) => `
         <div class="watch-row clickable-stock" data-symbol="${stock.symbol}">
@@ -187,16 +199,20 @@ function renderWatchlist() {
 
 function renderMarket() {
   const marketCards = document.getElementById("marketCards");
-  if (!state.dashboard.market.length) {
-    marketCards.innerHTML =
-      '<div class="empty-state"><div class="market-card"><strong>No stocks found.</strong><p class="muted">Try a different search keyword.</p></div></div>';
-    return;
-  }
+  const market = Array.isArray(state.dashboard?.market) ? state.dashboard.market : [];
+  const allStocks = Array.isArray(state.dashboard?.allStocks) ? state.dashboard.allStocks : market;
+  const displayStocks = state.search ? market : allStocks;
 
-    marketCards.innerHTML = state.dashboard.market
-      .map(
-        (stock) => `
-          <article class="market-card select-stock" data-symbol="${stock.symbol}">
+  if (!Array.isArray(displayStocks) || !displayStocks.length) {
+      marketCards.innerHTML =
+        '<div class="empty-state"><div class="market-card"><strong>No stocks found.</strong><p class="muted">Try a different search keyword.</p></div></div>';
+      return;
+    }
+  
+      marketCards.innerHTML = displayStocks
+        .map(
+          (stock) => `
+            <article class="market-card select-stock" data-symbol="${stock.symbol}">
             <div class="section-top">
               ${stockIdentMarkup(stock)}
               <span class="delta ${stock.changePercent >= 0 ? "positive" : "negative"}">
@@ -233,7 +249,7 @@ function renderMarket() {
 }
 
 function renderHoldings() {
-  const holdings = state.dashboard.holdings;
+  const holdings = Array.isArray(state.dashboard?.holdings) ? state.dashboard.holdings : [];
 
   document.getElementById("holdingsList").innerHTML = holdings.length
     ? holdings
@@ -316,7 +332,8 @@ function renderCompanyDeepDive(stock) {
 }
 
 function renderHistory() {
-  document.getElementById("historyTable").innerHTML = state.dashboard.transactions
+  const transactions = Array.isArray(state.dashboard?.transactions) ? state.dashboard.transactions : [];
+  document.getElementById("historyTable").innerHTML = transactions
     .map(
       (trade) => `
         <tr>
@@ -334,8 +351,8 @@ function renderHistory() {
 }
 
 function renderPerformance() {
-  const holdings = state.dashboard.holdings;
-  const stats = state.dashboard.stats;
+  const holdings = Array.isArray(state.dashboard?.holdings) ? state.dashboard.holdings : [];
+  const stats = state.dashboard?.stats || {};
     document.getElementById("profitLossCards").innerHTML = holdings.length
       ? holdings
           .map(
@@ -378,12 +395,56 @@ function renderPerformance() {
           <p class="delta ${item.tone}">${item.tone === "positive" ? "Strong position" : "Needs attention"}</p>
         </div>
       `
+      )
+    .join("");
+}
+
+function renderWallet() {
+  const user = state.dashboard?.user || {};
+  const stats = state.dashboard?.stats || {};
+  const items = [
+    {
+      label: "Wallet Balance",
+      value: formatCurrency(user.cashBalance),
+      note: "Available to place new orders",
+    },
+    {
+      label: "Invested Capital",
+      value: formatCurrency(stats.invested),
+      note: "Amount currently in holdings",
+    },
+    {
+      label: "Portfolio Value",
+      value: formatCurrency(stats.currentValue),
+      note: "Live marked portfolio value",
+    },
+    {
+      label: "Total Buying Power",
+      value: formatCurrency(user.cashBalance + stats.currentValue),
+      note: "Wallet plus current holdings",
+    },
+  ];
+
+  document.getElementById("walletSummary").innerHTML = items
+    .map(
+      (item) => `
+        <div class="metric-card">
+          <p class="eyebrow">${item.label}</p>
+          <div class="stat-value">${item.value}</div>
+          <p class="muted">${item.note}</p>
+        </div>
+      `
     )
     .join("");
 }
 
+function syncWalletMethodView() {
+  const showGpay = walletAction.value === "deposit" && walletMethod.value === "gpay";
+  gpayPanel.classList.toggle("hidden", !showGpay);
+}
+
 function renderProfile() {
-  const user = state.dashboard.user;
+  const user = state.dashboard?.user || {};
   const entries = [
     ["Name", user.name],
     ["Email", user.email],
@@ -405,19 +466,19 @@ function renderProfile() {
     )
     .join("");
 
-  document.getElementById("riskProfile").value = user.riskProfile;
-  document.getElementById("notifications").value = user.notifications;
-  document.getElementById("preferredMarket").value = user.preferredMarket;
+  if (user.riskProfile) document.getElementById("riskProfile").value = user.riskProfile;
+  if (user.notifications) document.getElementById("notifications").value = user.notifications;
+  if (user.preferredMarket) document.getElementById("preferredMarket").value = user.preferredMarket;
 }
 
 function renderSelectedStock() {
   const selected =
-    state.dashboard.market.find((stock) => stock.symbol === state.selectedSymbol) ||
-    state.dashboard.holdings.find((stock) => stock.symbol === state.selectedSymbol) ||
-    state.dashboard.watchlist.find((stock) => stock.symbol === state.selectedSymbol) ||
-    state.dashboard.market[0] ||
-    state.dashboard.holdings[0] ||
-    state.dashboard.watchlist[0];
+    (state.dashboard?.market || []).find((stock) => stock.symbol === state.selectedSymbol) ||
+    (state.dashboard?.holdings || []).find((stock) => stock.symbol === state.selectedSymbol) ||
+    (state.dashboard?.watchlist || []).find((stock) => stock.symbol === state.selectedSymbol) ||
+    (state.dashboard?.market || [])[0] ||
+    (state.dashboard?.holdings || [])[0] ||
+    (state.dashboard?.watchlist || [])[0];
 
   if (!selected) {
     document.getElementById("selectedStockCard").innerHTML =
@@ -569,7 +630,7 @@ function drawChart(points = [], symbol = "") {
   document.getElementById("chartTitle").innerHTML = selectedStock
     ? `${stockIdentMarkup(selectedStock, "large")}<span>${symbol} Price</span>`
     : `${symbol} Price`;
-  document.getElementById("chartSpotPrice").textContent = `INR ${latest.close.toFixed(2)}`;
+  document.getElementById("chartSpotPrice").textContent = formatCurrency(latest.close);
   setOhlcStats(latest);
   document.getElementById("liveChart").innerHTML = `
     <svg viewBox="0 0 ${width} ${height}" aria-label="Candlestick stock chart">
@@ -587,6 +648,9 @@ async function fetchDashboard() {
     search: state.search,
   });
   state.dashboard = await api(`/api/dashboard?${query.toString()}`);
+  if (!Array.isArray(state.dashboard.allStocks)) {
+    state.dashboard.allStocks = Array.isArray(state.dashboard.market) ? state.dashboard.market : [];
+  }
   if (!state.selectedSymbol) {
     state.selectedSymbol = state.dashboard.chart.symbol;
   }
@@ -594,13 +658,16 @@ async function fetchDashboard() {
 }
 
 function renderAll() {
+  if (!state.dashboard) {
+    return;
+  }
   const chartStock =
-    state.dashboard.market.find((stock) => stock.symbol === state.selectedSymbol) ||
-    state.dashboard.holdings.find((stock) => stock.symbol === state.selectedSymbol) ||
-    state.dashboard.watchlist.find((stock) => stock.symbol === state.selectedSymbol) ||
-    state.dashboard.market[0] ||
-    state.dashboard.holdings[0] ||
-    state.dashboard.watchlist[0];
+    (state.dashboard.market || []).find((stock) => stock.symbol === state.selectedSymbol) ||
+    (state.dashboard.holdings || []).find((stock) => stock.symbol === state.selectedSymbol) ||
+    (state.dashboard.watchlist || []).find((stock) => stock.symbol === state.selectedSymbol) ||
+    (state.dashboard.market || [])[0] ||
+    (state.dashboard.holdings || [])[0] ||
+    (state.dashboard.watchlist || [])[0];
 
   if (chartStock) {
     state.selectedSymbol = chartStock.symbol;
@@ -613,6 +680,7 @@ function renderAll() {
   renderHoldings();
   renderHistory();
   renderPerformance();
+  renderWallet();
   renderProfile();
   renderSelectedStock();
   renderCompanyDeepDive(chartStock);
@@ -678,6 +746,23 @@ async function saveProfile(event) {
     preferredMarket: result.user.preferredMarket,
   };
   renderProfile();
+  showToast(result.message);
+}
+
+async function updateWallet(event) {
+  event.preventDefault();
+  const result = await api("/api/wallet", {
+    method: "POST",
+    body: JSON.stringify({
+      email: state.userEmail,
+      action: document.getElementById("walletAction").value,
+      method: document.getElementById("walletMethod").value,
+      amount: Number(document.getElementById("walletAmount").value),
+    }),
+  });
+
+  state.dashboard = result.dashboard;
+  renderAll();
   showToast(result.message);
 }
 
@@ -764,6 +849,9 @@ logoutBtn.addEventListener("click", () => {
   }
   dashboardView.classList.add("hidden");
   loginView.classList.remove("hidden");
+  loginForm.reset();
+  document.getElementById("email").value = "";
+  document.getElementById("password").value = "";
   showToast("Logged out.");
 });
 
@@ -792,6 +880,12 @@ tradeForm.addEventListener("submit", (event) => {
 profileForm.addEventListener("submit", (event) => {
   saveProfile(event).catch((error) => showToast(error.message, true));
 });
+walletForm.addEventListener("submit", (event) => {
+  updateWallet(event).catch((error) => showToast(error.message, true));
+});
+walletAction.addEventListener("change", syncWalletMethodView);
+walletMethod.addEventListener("change", syncWalletMethodView);
+syncWalletMethodView();
 
 quickBuyBtn.addEventListener("click", () => openTradeModal(state.selectedSymbol, "Buy"));
 quickSellBtn.addEventListener("click", () => openTradeModal(state.selectedSymbol, "Sell"));

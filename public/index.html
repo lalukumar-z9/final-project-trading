@@ -48,17 +48,17 @@
               <button type="button" class="auth-tab" data-auth-view="register">Register</button>
             </div>
 
-            <form class="login-form auth-form active" id="loginForm">
+            <form class="login-form auth-form active" id="loginForm" autocomplete="off">
               <label>
                 Email
-                <input id="email" type="email" value="investor@tradesphere.com" required />
+                <input id="email" type="email" autocomplete="off" autocapitalize="none" spellcheck="false" required />
               </label>
               <label>
                 Password
-                <input id="password" type="password" value="Trade@123" required />
+                <input id="password" type="password" autocomplete="new-password" required />
               </label>
               <button type="submit" class="primary-btn">Enter Trading Desk</button>
-              <p class="login-note">Demo account is prefilled. Orders persist in MongoDB.</p>
+              
             </form>
 
             <form class="login-form auth-form" id="registerForm">
@@ -97,8 +97,10 @@
 
           <nav class="sidebar-nav">
             <button class="nav-item active" data-section="overview">Overview</button>
+            <button class="nav-item" data-section="market">Market</button>
             <button class="nav-item" data-section="history">History</button>
             <button class="nav-item" data-section="performance">Performance</button>
+            <button class="nav-item" data-section="wallet">Wallet</button>
             <button class="nav-item" data-section="profile">Profile</button>
           </nav>
 
@@ -139,7 +141,7 @@
                     <div id="chartTitle" class="chart-title">AAPL Price</div>
                   </div>
                   <div class="trading-price-box">
-                    <div id="chartSpotPrice" class="chart-spot-price">INR 0.00</div>
+                      <div id="chartSpotPrice" class="chart-spot-price">$0.00</div>
                     <div class="legend">
                       <span class="dot"></span>
                       <span id="chartChange">0.00%</span>
@@ -189,17 +191,6 @@
               </article>
             </div>
 
-            <article class="market-panel glass">
-              <div class="section-top">
-                <div>
-                  <p class="eyebrow">Search Options</p>
-                  <h3>Market Explorer</h3>
-                </div>
-                <span class="accent-pill">Live orders enabled</span>
-              </div>
-              <div id="marketCards" class="market-grid"></div>
-            </article>
-
             <div class="split-grid">
               <article class="glass">
                 <div class="section-top">
@@ -221,6 +212,19 @@
                 <div id="companyDeepDive" class="stack-list"></div>
               </article>
             </div>
+          </section>
+
+          <section id="market" class="page-section">
+            <article class="market-panel glass">
+              <div class="section-top">
+                <div>
+                  <p class="eyebrow">All Listed Companies</p>
+                  <h3>Market Explorer</h3>
+                </div>
+                <span class="accent-pill">Browse every stock</span>
+              </div>
+              <div id="marketCards" class="market-grid"></div>
+            </article>
           </section>
 
           <section id="history" class="page-section">
@@ -271,6 +275,55 @@
                   </div>
                 </div>
                 <div id="metricsPanel" class="metric-grid"></div>
+              </article>
+            </div>
+          </section>
+
+          <section id="wallet" class="page-section">
+            <div class="split-grid">
+              <article class="glass">
+                <div class="section-top">
+                  <div>
+                    <p class="eyebrow">Funds Management</p>
+                    <h3>Wallet Overview</h3>
+                  </div>
+                </div>
+                <div id="walletSummary" class="metric-grid"></div>
+              </article>
+
+              <article class="glass">
+                <div class="section-top">
+                  <div>
+                    <p class="eyebrow">Wallet Actions</p>
+                    <h3>Add or Withdraw Funds</h3>
+                  </div>
+                </div>
+                <form id="walletForm" class="profile-form">
+                  <label>
+                    Action
+                    <select id="walletAction">
+                      <option value="deposit">Deposit</option>
+                      <option value="withdraw">Withdraw</option>
+                    </select>
+                  </label>
+                  <label>
+                    Amount
+                    <input id="walletAmount" type="number" min="1" value="1000" required />
+                  </label>
+                  <label>
+                    Payment method
+                    <select id="walletMethod">
+                      <option value="gpay">GPay</option>
+                      <option value="bank">Bank Transfer</option>
+                      <option value="card">Card</option>
+                    </select>
+                  </label>
+                  <div id="gpayPanel" class="wallet-note">
+                    <strong>GPay UPI:</strong> `tradesphere@okaxis`
+                    <p class="muted">For this project demo, selecting GPay simulates a successful wallet top-up.</p>
+                  </div>
+                  <button type="submit" class="primary-btn">Update Wallet</button>
+                </form>
               </article>
             </div>
           </section>

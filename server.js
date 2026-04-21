@@ -672,6 +672,7 @@ async function getDashboard(email, search = "") {
       preferredMarket: user.preferredMarket,
       cashBalance: user.cashBalance,
     },
+    allStocks: portfolio.watchlist,
     market,
     watchlist: portfolio.watchlist.slice(0, 5),
     holdings: portfolio.holdings,
@@ -817,6 +818,40 @@ app.post("/api/trades", async (req, res) => {
   const dashboard = await getDashboard(email);
   return res.status(201).json({
     message: `${type} order for ${safeSymbol} executed successfully.`,
+    dashboard,
+  });
+});
+
+app.post("/api/wallet", async (req, res) => {
+  const { email, action, amount } = req.body || {};
+  const numericAmount = Number(amount);
+
+  if (!email || !["deposit", "withdraw"].includes(action) || numericAmount <= 0) {
+    return res.status(400).json({ message: "Wallet payload is invalid." });
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: "User not found." });
+  }
+
+  if (action === "withdraw" && user.cashBalance < numericAmount) {
+    return res.status(400).json({ message: "Insufficient wallet balance for withdrawal." });
+  }
+
+  user.cashBalance = roundPrice(
+    action === "deposit"
+      ? user.cashBalance + numericAmount
+      : user.cashBalance - numericAmount
+  );
+  await user.save();
+
+  const dashboard = await getDashboard(email);
+  return res.json({
+    message:
+      action === "deposit"
+        ? "Funds added to wallet successfully."
+        : "Funds withdrawn from wallet successfully.",
     dashboard,
   });
 });

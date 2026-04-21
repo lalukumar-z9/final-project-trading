@@ -780,6 +780,14 @@ button:hover {
   border: 1px solid rgba(92, 200, 255, 0.12);
 }
 
+.wallet-note {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(62, 207, 142, 0.08);
+  border: 1px solid rgba(62, 207, 142, 0.16);
+  color: #d9fff0;
+}
+
 .detail-list {
   display: grid;
   gap: 10px;
